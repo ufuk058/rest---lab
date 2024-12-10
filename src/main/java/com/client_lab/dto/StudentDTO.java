@@ -1,5 +1,6 @@
 package com.client_lab.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class StudentDTO {
 
+
     private Long id;
 
     private String firstName;
@@ -20,6 +22,7 @@ public class StudentDTO {
     private String email;
     private String username;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private LocalDate birthday;
