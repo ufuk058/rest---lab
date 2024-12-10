@@ -53,7 +53,7 @@ public class TeacherServiceImpl implements TeacherService {
 
         addressRepository.findByAddressNo(teacherDTO.getAddressNo())
                 .orElseThrow(()-> new NotFoundException("Address not found!"));
-        Teacher teacherToSave=mapperUtil.convert(foundTeacher, new Teacher());
+        Teacher teacherToSave=mapperUtil.convert(teacherDTO, new Teacher());
         Teacher savedTeacher= teacherRepository.save(teacherToSave);
 
 
