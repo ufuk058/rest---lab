@@ -41,6 +41,15 @@ public class StudentServiceImpl implements StudentService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public StudentDTO findByUsername(String username) {
+        Student student= studentRepository.findByUsername(username).orElseThrow(
+                ()->new NotFoundException("Student not found!")
+        );
+        return mapperUtil.convert(student,new StudentDTO());
+
+    }
+
 
     @Override
     public StudentDTO createStudent(StudentDTO studentDTO) {
