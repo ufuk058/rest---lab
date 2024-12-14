@@ -1,22 +1,29 @@
 package com.client_lab.service.impl;
 
+import com.client_lab.client.WeatherClient;
 import com.client_lab.dto.AddressDTO;
+import com.client_lab.dto.weather.WeatherResponse;
 import com.client_lab.entity.Address;
 import com.client_lab.exception.NotFoundException;
 import com.client_lab.repository.AddressRepository;
 import com.client_lab.service.AddressService;
 import com.client_lab.util.MapperUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AddressServiceImpl implements AddressService {
 
+    @Value("${access_key}")
+    private String access_key;
     private final AddressRepository addressRepository;
     private final MapperUtil mapperUtil;
+    private final WeatherClient weatherClient;
 
-    public AddressServiceImpl(AddressRepository addressRepository, MapperUtil mapperUtil) {
+    public AddressServiceImpl(AddressRepository addressRepository, MapperUtil mapperUtil, WeatherClient weatherClient) {
         this.addressRepository = addressRepository;
         this.mapperUtil = mapperUtil;
+        this.weatherClient = weatherClient;
     }
 
     @Override
@@ -26,7 +33,21 @@ public class AddressServiceImpl implements AddressService {
                 ()->new NotFoundException("No address found")
         );
 
-        return mapperUtil.convert(foundAddress, new AddressDTO());
+        AddressDTO addressDTO= mapperUtil.convert(foundAddress, new AddressDTO());
+        addressDTO.setCurrentTemperature(retrieveTemperatureByCity(addressDTO.getCity()));
+
+        return addressDTO;
+    }
+
+    private Integer retrieveTemperatureByCity(String city){
+        WeatherResponse weatherResponse= weatherClient.getCurrentWeather(access_key,city);
+        if (weatherResponse == null || weatherResponse.getCurrent() == null) {
+
+            return null;
+        }
+        Integer temperature=weatherResponse.getCurrent().getTemperature();
+
+        return temperature;
     }
 
     @Override
