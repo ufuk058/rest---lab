@@ -1,5 +1,6 @@
 package com.client_lab.service.impl;
 
+import com.client_lab.client.CountryClient;
 import com.client_lab.client.WeatherClient;
 import com.client_lab.dto.AddressDTO;
 import com.client_lab.dto.weather.WeatherResponse;
@@ -19,11 +20,13 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final MapperUtil mapperUtil;
     private final WeatherClient weatherClient;
+    private final CountryClient countryClient;
 
-    public AddressServiceImpl(AddressRepository addressRepository, MapperUtil mapperUtil, WeatherClient weatherClient) {
+    public AddressServiceImpl(AddressRepository addressRepository, MapperUtil mapperUtil, WeatherClient weatherClient, CountryClient countryClient) {
         this.addressRepository = addressRepository;
         this.mapperUtil = mapperUtil;
         this.weatherClient = weatherClient;
+        this.countryClient = countryClient;
     }
 
     @Override
@@ -35,6 +38,7 @@ public class AddressServiceImpl implements AddressService {
 
         AddressDTO addressDTO= mapperUtil.convert(foundAddress, new AddressDTO());
         addressDTO.setCurrentTemperature(retrieveTemperatureByCity(addressDTO.getCity()));
+        addressDTO.setFlag(countryClient.retrieveFlagByCountry(addressDTO.getCountry()));
 
         return addressDTO;
     }
